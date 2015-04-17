@@ -26,8 +26,12 @@ def parse_annotation(line):
     return ret
 
 def crop_face(image, an):
+    diff_eyes = an["left_eye"] - an["right_eye"]
+    if diff_eyes[0] == 0 or abs(float(diff_eyes[1]) / diff_eyes[0]) > 0.5:
+        return None
     center = (an["left_eye"] + an["right_eye"] + an["mouth"]) / 3
-    radius = np.linalg.norm(an["left_eye"] - an["right_eye"])
+    if center[1] > an["mouth"][1]: return None
+    radius = np.linalg.norm(diff_eyes)
     xu = center[0] - radius
     xl = center[0] + radius
     yu = center[1] - radius
