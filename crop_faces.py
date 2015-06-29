@@ -4,12 +4,17 @@ from skimage import io, transform
 from glob import iglob
 
 def main():
+    if len(sys.argv) < 3:
+        print "./crop.faces.py INPUT_DIR OUTPUT_DIR"
     input_dir = sys.argv[1]
     output_dir = sys.argv[2]
 
     for i, image_path in enumerate(iglob('%s/*/*.jpg' % input_dir)):
         annotation_path = '%s.cat' % image_path
-        annotation = parse_annotation(open(annotation_path).read())
+        try:
+            annotation = parse_annotation(open(annotation_path).read())
+        except:
+            continue
         face = crop_face(io.imread(image_path), annotation)
         if face != None:
             io.imsave('%s/%d.png' % (output_dir, i), face)
@@ -31,7 +36,7 @@ def crop_face(image, an):
         return None
     center = (an["left_eye"] + an["right_eye"] + an["mouth"]) / 3
     if center[1] > an["mouth"][1]: return None
-    radius = np.linalg.norm(diff_eyes)
+    radius = np.linalg.norm(diff_eyes) * 1.1
     xu = center[0] - radius
     xl = center[0] + radius
     yu = center[1] - radius
