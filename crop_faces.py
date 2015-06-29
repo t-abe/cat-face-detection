@@ -6,6 +6,7 @@ from glob import iglob
 def main():
     if len(sys.argv) < 3:
         print "./crop.faces.py INPUT_DIR OUTPUT_DIR"
+        return
     input_dir = sys.argv[1]
     output_dir = sys.argv[2]
 
